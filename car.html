@@ -334,7 +334,7 @@
 						}
 
 						input = {
-							power: null,
+							power: null, 
 							direction: null,
 							steering: 0
 						};
@@ -385,9 +385,9 @@
 
 						if (input && car) {
 							if (input.direction !== null) {
-								input.steering += input.direction / 50;
-								if (input.steering < -.6) input.steering = -.6;
-								if (input.steering > .6) input.steering = .6;
+								input.steering = 0.2 * input.direction;
+							} else {
+								input.steering = 0;
 							}
 							car.setSteering(input.steering, 0);
 							car.setSteering(input.steering, 1);
@@ -395,10 +395,13 @@
 							if (input.power === true) {
 								car.applyEngineForce(300);
 							} else if (input.power === false) {
+								car.setBrake(20, 0);
+								car.setBrake(20, 1);
 								car.setBrake(20, 2);
 								car.setBrake(20, 3);
 							} else {
-								car.applyEngineForce(0);
+								car.applyEngineForce(-300);
+
 							}
 						}
 
@@ -633,7 +636,7 @@
 					}
 				}
 			}
-			
+
 			addBall();
 			addObject();
 			addCar();
