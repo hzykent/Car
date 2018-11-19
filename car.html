@@ -119,10 +119,10 @@
 			);
 			cameraCube.position.set(0, 0, 0);
 			cameraCube.lookAt(sceneCube.position);
-			var r = "images/";
-			var urls = [r + "px.jpg", r + "nx.jpg",
-			r + "py.jpg", r + "ny.jpg",
-			r + "pz.jpg", r + "nz.jpg"];
+			var r = "images/CloudyCrown_Midday_";
+			var urls = [r + "Front.png", r + "Back.png",
+			r + "Up.png", r + "Down.png",
+			r + "Left.png", r + "Right.png"];
 			textureCube = new THREE.CubeTextureLoader().load(urls);
 			textureCube.format = THREE.RGBFormat;
 			textureCube.mapping = THREE.CubeReflectionMapping;
@@ -135,7 +135,7 @@
 				side: THREE.BackSide
 			});
 			cubeMaterial.uniforms["tCube"].value = textureCube;
-			cubeMesh = new THREE.Mesh(new THREE.BoxBufferGeometry(500, 500, 500), cubeMaterial);
+			cubeMesh = new THREE.Mesh(new THREE.BoxBufferGeometry(300, 300, 300), cubeMaterial);
 			sceneCube.add(cubeMesh);
 			cubeMesh.material = cubeMaterial;
 			cubeMesh.visible = true;
@@ -146,12 +146,12 @@
 
 			function addGround() {
 				ground_material = Physijs.createMaterial(
-					new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture('images/general.jpg') }),
+					new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture('images/cartoon1.png') }),
 					.8, // high friction
 					.4 // low restitution
 				);
 				ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
-				ground_material.map.repeat.set(3, 3);
+				ground_material.map.repeat.set(12, 12);
 
 
 				ground_geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
@@ -285,7 +285,8 @@
 				ground.receiveShadow = true;
 				scene.add(ground);
 			}
-
+			
+			
 			//----------------------------------------- Car ---------------------------------------------------------------------------------
 
 			function addCar() {
@@ -662,7 +663,7 @@
 
 		function camera_update() {
 			//var relativeCameraOffset = new THREE.Vector3(100 ,100 ,0);
-			var relativeCameraOffset = new THREE.Vector3(0, 200, -100);
+			var relativeCameraOffset = new THREE.Vector3(0, 50, -100);
 			var cameraOffset = relativeCameraOffset.applyMatrix4(car.mesh.matrixWorld);
 			camera.position.x = cameraOffset.x;
 			camera.position.y = cameraOffset.y;
