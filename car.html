@@ -143,7 +143,7 @@
 
 
 			//------------------------------- ground -------------------------------------------------------------------------------------
-			addGround();
+
 			function addGround() {
 				ground_material = Physijs.createMaterial(
 					new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture('images/general.jpg') }),
@@ -287,7 +287,7 @@
 			}
 
 			//----------------------------------------- Car ---------------------------------------------------------------------------------
-			addCar();
+
 			function addCar() {
 				var loader = new THREE.JSONLoader();
 
@@ -413,7 +413,7 @@
 			function getRandomInt(max) {
 				return Math.floor(Math.random() * Math.floor(max));
 			}
-			addObject();
+
 			function addObject() {
 				for (var i = 0; i < 10; i++) {
 					var loader = new THREE.ObjectLoader();
@@ -533,7 +533,7 @@
 
 
 			// --------------------------------------- ball ---------------------------------------
-			addBall();
+
 			function addBall() {
 				// ball_color = colors[Math.round(Math.random() * colors.length)];
 				ball_color = 0xF9A602;
@@ -632,8 +632,11 @@
 					}
 				}
 			}
-
-
+			
+			addBall();
+			addObject();
+			addCar();
+			addGround();
 			requestAnimationFrame(render);
 			scene.simulate();
 		};
