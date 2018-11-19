@@ -117,7 +117,7 @@
 				1,
 				1000
 			);
-			cameraCube.position.set(0, 800, 0);
+			cameraCube.position.set(0, 0, 0);
 			cameraCube.lookAt(sceneCube.position);
 			var r = "images/";
 			var urls = [r + "px.jpg", r + "nx.jpg",
@@ -135,7 +135,7 @@
 				side: THREE.BackSide
 			});
 			cubeMaterial.uniforms["tCube"].value = textureCube;
-			cubeMesh = new THREE.Mesh(new THREE.BoxBufferGeometry(800, 800, 800), cubeMaterial);
+			cubeMesh = new THREE.Mesh(new THREE.BoxBufferGeometry(500, 500, 500), cubeMaterial);
 			sceneCube.add(cubeMesh);
 			cubeMesh.material = cubeMaterial;
 			cubeMesh.visible = true;
@@ -653,6 +653,9 @@
 			camera.position.y = cameraOffset.y;
 			camera.position.z = cameraOffset.z;
 			camera.lookAt(car.mesh.position);
+			cubeMesh.position.x = car.mesh.position.x;
+			cubeMesh.position.y = car.mesh.position.y;
+			cubeMesh.position.z = car.mesh.position.z;
 			cameraCube.position.x = cameraOffset.x;
 			cameraCube.position.y = cameraOffset.y;
 			cameraCube.position.z = cameraOffset.z;
