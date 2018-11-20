@@ -468,6 +468,28 @@
 				}
 			}
 
+			function addFlag(){
+				var x = 0;
+				var z = -240;
+				var loader = new THREE.ObjectLoader();
+				loader.load("objects/flag.json", function (object) {
+					var cone = new Physijs.BoxMesh(object.children[0].geometry, object.children[0].material, 0);
+					cone.scale.set(1, 8, 8);
+					cone.position.set(x, 20, z - 4);
+					cone.rotation.x = Math.PI;
+					scene.add(cone);
+				});
+				var loader = new THREE.ObjectLoader();
+				loader.load("objects/flag.json", function (object) {
+					var cylinder = new Physijs.BoxMesh(object.children[1].geometry, object.children[1].material, 0);
+					cylinder.scale.set(8, 8, 8);
+					cylinder.position.set(x, 13, z);
+					cylinder.rotation.x = Math.PI / 2;
+					cylinder.addEventListener('collision', onCollision2);
+					scene.add(cylinder);
+				});
+			}
+
 
 			function addTree_1(x, z) {
 				// 	// trees
@@ -606,6 +628,11 @@
 					// addGround();
 				}
 			}
+			function onCollision2(other_object, linear_velocity, angular_velocity) {
+				if (other_object.name === "car") {
+					document.getElementById("score").innerHTML = "Nice play!!!!!!(*^_^*)" + "Your Score is " + score.toString();
+				}
+			}
 			function ExplodeAnimation(x, y, z) {
 				var geometry = new THREE.Geometry();
 				for (var i = 0; i < totalObjects; i++) {
@@ -658,6 +685,7 @@
 			var location_x = [220, 160, 80]
 			var location_z = [240, 240, 230]
 			addBall(3, location_x, location_z);
+			addFlag();
 			addClouds();
 			addTree_1(230, 230);
 			addTree_1(240, 200);
