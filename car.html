@@ -30,7 +30,9 @@
 		var cloud;
 
 		// ------------------------- ball var ----------------------------------
-		var ball, score, degree, ball_display, ball_color;
+		var score, degree, ball_color;
+		var balls = []
+		var balls_display = []
 		score = 0;
 		degree = 0;
 		var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
@@ -344,7 +346,6 @@
 							steering: 0
 						};
 						document.addEventListener('keydown', function (ev) {
-							console.log("keydown");
 							switch (ev.keyCode) {
 								case 32: // Space
 									input.power = 0;
@@ -404,7 +405,12 @@
 				scene.addEventListener(
 					'update',
 					function () {
-
+						if (car.mesh) {
+							if (car.mesh.position.y < 0 || Math.abs(car.mesh.x) > 250 || Math.abs(car.mesh.z) > 250) {
+								document.getElementById("score").innerHTML = "Refresh to play again";
+								document.getElementById("score").style.color = 'red';
+							}
+						}
 						if (input && car) {
 							if (input.direction !== null) {
 								input.steering = 0.2 * input.direction;
@@ -548,60 +554,56 @@
 
 			// --------------------------------------- ball ---------------------------------------
 
-			function addBall() {
+			function addBall(nums, location_x, location_z) {
 				// ball_color = colors[Math.round(Math.random() * colors.length)];
 				ball_color = 0xF9A602;
 				var ball_material = Physijs.createMaterial(
 					new THREE.MeshStandardMaterial({ color: ball_color, shading: THREE.FlatShading }),
 					.8,
 					.9);
-				// var ball_geometry = new THREE.SphereGeometry(2, 16, 16);
 				var ball_geometry = new THREE.CylinderGeometry(3, 3, 1, 16, 1, false)
-				ball_display = new THREE.Mesh(ball_geometry, ball_material, 10)
-				// ball_display = new Physijs.SphereMesh(ball_geometry, ball_material, 0);
-				ball_display.castShadow = true;
-				ball = new Physijs.SphereMesh(ball_geometry, ball_material, 10);
-				// ball = new THREE.Mesh(ball_geometry, ball_material, 0);
-				ball.castShadow = true;
-				releaseBall();
-				ball.visible = false;
-				scene.add(ball_display)
-				scene.add(ball);
-				// ball.setDamping(0, 0.9);
-				ball.addEventListener('collision', onCollision);
+				for (var i = 0; i < nums; i++) {
+					// ball_display = new THREE.Mesh(ball_geometry, ball_material, 10)
+					balls_display.push(new THREE.Mesh(ball_geometry, ball_material, 10));
+					balls_display[i].castShadow = true;
+					// ball = new Physijs.SphereMesh(ball_geometry, ball_material, 10);
+					balls.push(new Physijs.SphereMesh(ball_geometry, ball_material, 10));
+					balls[i].castShadow = true;
+					balls[i].visible = false;
+					balls[i].setDamping(0, 0.9);
+					balls[i].addEventListener('collision', onCollision);
+					releaseBall(location_x[i], location_z[i], balls[i], balls_display[i]);
+					scene.add(balls_display[i])
+					scene.add(balls[i]);
+
+				}
 			}
-			function releaseBall() {
-				var range = 10 + Math.random() * 30;
-				ball.position.y = 10;
-				ball.position.x = ((2 * Math.floor(Math.random() * 2)) - 1) * range;
-				ball.position.z = ((2 * Math.floor(Math.random() * 2)) - 1) * range;
-				// ball.position.x = car.body.position.x - 10;
-				// ball.position.z = car.body.position.z;
-				ball_display.position.x = ball.position.x;
+			function releaseBall(x, z, ball, ball_display) {
+				ball.position.y = 4;
+				ball.position.x = x;
+				ball.position.z = z;
+				ball_display.position.x = x;
 				ball_display.position.y = 4;
-				ball_display.position.z = ball.position.z;
+				ball_display.position.z = z;
 				ball.__dirtyPosition = true;//force new position 
 				ball_display.__dirtyPosition = true;
 				// You also need to cancel the object's velocity 
-				// ball.setLinearVelocity(new THREE.Vector3(0, 0, 0));
-				// ball.setAngularVelocity(new THREE.Vector3(0.1, 0, 0));
+				ball.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+				ball.setAngularVelocity(new THREE.Vector3(0.1, 0, 0));
 			}
-			function removeBall() {
+			function removeBall(ball) {
 				parts.push(new ExplodeAnimation(ball.position.x, ball.position.y, ball.position.z));
 				scene.remove(ball);
-				scene.remove(ball_display)
-				addBall();
+				scene.remove(balls_display[balls.indexOf(ball)])
+				// addBall();
 			}
 			function onCollision(other_object, linear_velocity, angular_velocity) {
-				// console.log(other_object);
-				// console.log(other_object.name);
 				if (other_object.name === "car") {
-					console.log("Collision");
 					score++;
-					removeBall();
+					removeBall(this);
 					document.getElementById("score").innerHTML = "Your Score is " + score.toString();
-					scene.remove(ground);
-					addGround();
+					// scene.remove(ground);
+					// addGround();
 				}
 			}
 			function ExplodeAnimation(x, y, z) {
@@ -653,7 +655,9 @@
 
 
 			//------------------------------------------------functions----------------------------------------------------
-			addBall();
+			var location_x = [220, 160, 80]
+			var location_z = [240, 240, 230]
+			addBall(3, location_x, location_z);
 			addClouds();
 			addTree_1(230, 230);
 			addTree_1(240, 200);
@@ -693,20 +697,22 @@
 
 
 		function camera_update() {
-			//var relativeCameraOffset = new THREE.Vector3(100 ,100 ,0);
-			var relativeCameraOffset = new THREE.Vector3(0, 30, -100);
-			var cameraOffset = relativeCameraOffset.applyMatrix4(car.mesh.matrixWorld);
-			camera.position.x = cameraOffset.x;
-			//camera.position.y = cameraOffset.y;
-			camera.position.z = cameraOffset.z;
-			camera.lookAt(car.mesh.position);
-			cubeMesh.position.x = car.mesh.position.x;
-			cubeMesh.position.y = car.mesh.position.y;
-			cubeMesh.position.z = car.mesh.position.z;
-			cameraCube.position.x = cameraOffset.x;
-			//cameraCube.position.y = cameraOffset.y;
-			cameraCube.position.z = cameraOffset.z;
-			cameraCube.lookAt(car.mesh.position);
+			if (car.mesh) {
+				//var relativeCameraOffset = new THREE.Vector3(100 ,100 ,0);
+				var relativeCameraOffset = new THREE.Vector3(0, 30, -100);
+				var cameraOffset = relativeCameraOffset.applyMatrix4(car.mesh.matrixWorld);
+				camera.position.x = cameraOffset.x;
+				camera.position.y = cameraOffset.y;
+				camera.position.z = cameraOffset.z;
+				camera.lookAt(car.mesh.position);
+				cubeMesh.position.x = car.mesh.position.x;
+				cubeMesh.position.y = car.mesh.position.y;
+				cubeMesh.position.z = car.mesh.position.z;
+				cameraCube.position.x = cameraOffset.x;
+				cameraCube.position.y = cameraOffset.y;
+				cameraCube.position.z = cameraOffset.z;
+				cameraCube.lookAt(car.mesh.position);
+			}
 		}
 
 		render = function () {
@@ -716,14 +722,14 @@
 			renderer.render(scene, camera);
 
 			// make the ball rotation
-			ball_display.rotation.z = 0.5 * Math.PI;
-			ball_display.rotation.y += 0.05 * Math.PI;
-			ball.rotation.z = 0.5 * Math.PI;
-			ball.rotation.y += 0.05 * Math.PI;
-			// console.log("rotate:", ball.rotation.x)
+			for (var i = 0; i < balls.length; i++) {
+				balls[i].rotation.z = 0.5 * Math.PI;
+				balls[i].rotation.y += 0.05 * Math.PI;
+				balls_display[i].rotation.z = 0.5 * Math.PI;
+				balls_display[i].rotation.y += 0.05 * Math.PI;
+			}
 			var pCount = parts.length;
 			while (pCount--) {
-				// console.log("update");
 				parts[pCount].update();
 			}
 
@@ -740,23 +746,9 @@
 	<div id="heading">
 		<h1>Constraints, Car - <a href="http://chandlerprall.github.com/Physijs/">Physijs</a></h1>
 		<p>Use the arrow keys to drive around.</p>
+		<h1 id='score'>You score is 0</h1>
 	</div>
 	<div id="viewport"></div>
-
-	<script type="text/javascript">
-
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-31289553-1']);
-		_gaq.push(['_trackPageview']);
-
-		(function () {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = "js/ga.js";
-			var s = document.getElementsByTagName('script')[0];
-			s.parentNode.insertBefore(ga, s);
-		})();
-
-	</script>
 </body>
 
 </html>
