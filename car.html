@@ -346,7 +346,6 @@
 							steering: 0
 						};
 						document.addEventListener('keydown', function (ev) {
-							console.log("keydown");
 							switch (ev.keyCode) {
 								case 32: // Space
 									input.power = 0;
@@ -397,7 +396,12 @@
 				scene.addEventListener(
 					'update',
 					function () {
-
+						if (car.mesh) {
+							if (car.mesh.position.y < 0 || Math.abs(car.mesh.x) > 250 || Math.abs(car.mesh.z) > 250) {
+								document.getElementById("score").innerHTML = "Refresh to play again";
+								document.getElementById("score").style.color = 'red';
+							}
+						}
 						if (input && car) {
 							if (input.direction !== null) {
 								input.steering = 0.2 * input.direction;
@@ -456,7 +460,7 @@
 			}
 
 
-			function addTree_1(x , z) {
+			function addTree_1(x, z) {
 				// 	// trees
 				var loader = new THREE.ObjectLoader();
 				loader.load("objects/tree-toon.json", function (object) {
@@ -585,10 +589,7 @@
 				// addBall();
 			}
 			function onCollision(other_object, linear_velocity, angular_velocity) {
-				// console.log(other_object);
-				console.log(other_object.name);
 				if (other_object.name === "car") {
-					console.log("Collision");
 					score++;
 					removeBall(this);
 					document.getElementById("score").innerHTML = "Your Score is " + score.toString();
@@ -638,7 +639,7 @@
 					}
 				}
 			}
-			
+
 			var location_x = [220, 160, 80]
 			var location_z = [240, 240, 230]
 			addBall(3, location_x, location_z);
@@ -698,10 +699,8 @@
 				balls_display[i].rotation.z = 0.5 * Math.PI;
 				balls_display[i].rotation.y += 0.05 * Math.PI;
 			}
-			// console.log("rotate:", ball.rotation.x)
 			var pCount = parts.length;
 			while (pCount--) {
-				// console.log("update");
 				parts[pCount].update();
 			}
 
