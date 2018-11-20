@@ -475,8 +475,9 @@
 				loader.load("objects/flag.json", function (object) {
 					var cone = new Physijs.BoxMesh(object.children[0].geometry, object.children[0].material, 0);
 					cone.scale.set(1, 8, 8);
-					cone.position.set(x, 20, z - 4);
+					cone.position.set(x + 4, 20, z);
 					cone.rotation.x = Math.PI;
+					cone.rotation.y = Math.PI / 2;
 					scene.add(cone);
 				});
 				var loader = new THREE.ObjectLoader();
@@ -682,9 +683,9 @@
 
 
 			//------------------------------------------------functions----------------------------------------------------
-			var location_x = [220, 160, 80]
-			var location_z = [240, 240, 230]
-			addBall(3, location_x, location_z);
+			var location_x = [220, 160, 80, 170, 30, -150, -170, 170, 240,  0]
+			var location_z = [240, 240, 230, 0, 110, 220,  20,  -130, -240, -130]
+			addBall(location_x.length, location_x, location_z);
 			addFlag();
 			addClouds();
 			addTree_1(230, 230);
