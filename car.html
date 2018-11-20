@@ -702,14 +702,14 @@
 				var relativeCameraOffset = new THREE.Vector3(0, 30, -100);
 				var cameraOffset = relativeCameraOffset.applyMatrix4(car.mesh.matrixWorld);
 				camera.position.x = cameraOffset.x;
-				camera.position.y = cameraOffset.y;
+				//camera.position.y = cameraOffset.y;
 				camera.position.z = cameraOffset.z;
 				camera.lookAt(car.mesh.position);
 				cubeMesh.position.x = car.mesh.position.x;
 				cubeMesh.position.y = car.mesh.position.y;
 				cubeMesh.position.z = car.mesh.position.z;
 				cameraCube.position.x = cameraOffset.x;
-				cameraCube.position.y = cameraOffset.y;
+				//cameraCube.position.y = cameraOffset.y;
 				cameraCube.position.z = cameraOffset.z;
 				cameraCube.lookAt(car.mesh.position);
 			}
