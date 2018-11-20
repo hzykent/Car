@@ -397,7 +397,7 @@
 					'update',
 					function () {
 						if (car.mesh) {
-							if (car.mesh.position.y < 0 || Math.abs(car.mesh.x) > 250 || Math.abs(car.mesh.z) > 250) {
+							if (car.mesh.position.y < 0 || Math.abs(car.mesh.x) > 250 || Math.abs(car.mesh.z) > 250 || Math.abs(car.mesh.rotation.x) > Math.PI) {
 								document.getElementById("score").innerHTML = "Refresh to play again";
 								document.getElementById("score").style.color = 'red';
 							}
@@ -715,8 +715,8 @@
 
 <body>
 	<div id="heading">
-		<h1>Constraints, Car - <a href="http://chandlerprall.github.com/Physijs/">Physijs</a></h1>
-		<p>Use the arrow keys to drive around.</p>
+		<!-- <h1>Constraints, Car - <a href="http://chandlerprall.github.com/Physijs/">Physijs</a></h1> -->
+		<p>Get all the coins and hit the flag.</p>
 		<h1 id='score'>You score is 0</h1>
 	</div>
 	<div id="viewport"></div>
