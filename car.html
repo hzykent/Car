@@ -27,6 +27,7 @@
 			car = {};
 
 		var input;
+		var cloud;
 
 		// ------------------------- ball var ----------------------------------
 		var ball, score, degree, ball_display, ball_color;
@@ -92,7 +93,7 @@
 
 			//------------------------------------------------------------- Light -------------------------------------------------------------------------
 			light = new THREE.DirectionalLight(0xFFFFFF);
-			light.position.set(300, 300, 300);
+			light.position.set(300, 600, 300);
 			light.target.position.copy(scene.position);
 			light.castShadow = true;
 			light.shadowCameraLeft = -500;
@@ -100,13 +101,13 @@
 			light.shadowCameraRight = 500;
 			light.shadowCameraBottom = 500;
 			light.shadowCameraNear = 5;
-			light.shadowCameraFar = 500;
+			light.shadowCameraFar = 5000;
 			light.shadowBias = -.0001
 			light.shadowMapWidth = light.shadowMapHeight = 4096;
 			light.shadowDarkness = .7;
 			scene.add(light);
-			var ambient = new THREE.AmbientLight( 0x404040 ); // soft white light
-			scene.add( ambient );
+			var ambient = new THREE.AmbientLight(0x101010); // soft white light
+			scene.add(ambient);
 
 
 
@@ -288,8 +289,8 @@
 				ground.receiveShadow = true;
 				scene.add(ground);
 			}
-			
-			
+
+
 			//----------------------------------------- Car ---------------------------------------------------------------------------------
 
 			function addCar() {
@@ -403,7 +404,7 @@
 							}
 							car.setSteering(input.steering, 0);
 							car.setSteering(input.steering, 1);
-							
+
 							car.setBrake(0, 0);
 							car.setBrake(0, 1);
 							car.setBrake(0, 2);
@@ -431,127 +432,109 @@
 
 
 			// ---------------------------------------------- JSON object Loading-------------------------------------------------------------
-			// cloud
 			function getRandomInt(max) {
 				return Math.floor(Math.random() * Math.floor(max));
 			}
 
-			function addObject() {
-				for (var i = 0; i < 10; i++) {
-					var loader = new THREE.ObjectLoader();
-					loader.load("objects/island-cloud-mod.json", function (object) {
-						var cloud = new Physijs.BoxMesh(object.children[0].children[0].geometry, object.children[0].children[0].material, 0);
-						cloud.castShadow = true;
-						//cloud.receiveShadow = true;
-						cloud.scale.set(0.1, 0.1, 0.1);
-						var ran_x = getRandomInt(500) - 250;
-						var ran_z = getRandomInt(500) - 250;
-						cloud.position.set(ran_x, 20, ran_z);
-						scene.add(cloud);
+			function addClouds() {
+				// clouds
+				for (var i = 0; i < 15; i++) {
+					var loader = new THREE.OBJLoader();
+					loader.load("objects/island-cloud-mod.obj", function (object) {
+						object.scale.set(0.3, 0.3, 0.3);
+						object.castShadow = true;
+						object.receiveShadow = true;
+						cloud = object;
+						var ran_x = getRandomInt(600) - 300;
+						var ran_z = getRandomInt(600) - 300;
+						object.position.set(ran_x, 25, ran_z);
+						scene.add(object);
 					});
 				}
-
-				for (var i = 0; i < 10; i++) {
-					var loader = new THREE.ObjectLoader();
-					loader.load("objects/island-cloud-c.json", function (object) {
-						var cloud = new Physijs.BoxMesh(object.children[0].children[0].geometry, object.children[0].children[0].material, 0);
-						cloud.castShadow = true;
-						//cloud.receiveShadow = true;
-						cloud.scale.set(0.5, 0.5, 0.5);
-						var ran_x = getRandomInt(500) - 250;
-						var ran_z = getRandomInt(500) - 250;
-						cloud.position.set(ran_x, 20, ran_z);
-						cloud.rotation.x = Math.PI / 2;
-						scene.add(cloud);
-					});
-				}
-
-
-				// 	// trees
-				for (var i = 0; i < 10; i++) {
-					var ran_x = getRandomInt(495) - 245;
-					var ran_z = getRandomInt(495) - 245;
-					var loader = new THREE.ObjectLoader();
-					loader.load("objects/tree-toon.json", function (object) {
-						var tree = new Physijs.BoxMesh(object.children[3].geometry, object.children[3].material, 0);
-						tree.castShadow = true;
-						tree.receiveShadow = true;
-						tree.scale.set(1, 12, 1);
-						tree.position.set(ran_x, 10, ran_z);
-						scene.add(tree);
-					});
-					var loader = new THREE.ObjectLoader();
-					loader.load("objects/tree-toon.json", function (object) {
-						var tree = new Physijs.BoxMesh(object.children[2].geometry, object.children[2].material, 0);
-						tree.castShadow = true;
-						tree.receiveShadow = true;
-						tree.scale.set(8, 8, 8);
-						tree.position.set(ran_x, 18, ran_z);
-						tree.rotation.x = Math.PI;
-						scene.add(tree);
-					});
-					var loader = new THREE.ObjectLoader();
-					loader.load("objects/tree-toon.json", function (object) {
-						var tree = new Physijs.BoxMesh(object.children[1].geometry, object.children[1].material, 0);
-						tree.castShadow = true;
-						tree.receiveShadow = true;
-						tree.scale.set(6, 6, 6);
-						tree.position.set(ran_x, 25, ran_z);
-						tree.rotation.x = Math.PI;
-						scene.add(tree);
-					});
-					var loader = new THREE.ObjectLoader();
-					loader.load("objects/tree-toon.json", function (object) {
-						var tree = new Physijs.BoxMesh(object.children[0].geometry, object.children[0].material, 0);
-						tree.castShadow = true;
-						tree.receiveShadow = true;
-						tree.scale.set(4, 4, 4);
-						tree.position.set(ran_x, 30, ran_z);
-						tree.rotation.x = Math.PI;
-						scene.add(tree);
-					});
-				}
-
-				// var loader = new THREE.ObjectLoader();
-				// loader.load("objects/tree-toon.json", function (object) {
-				// 	var tree = new Physijs.BoxMesh(object.children[3].geometry, object.children[3].material, 0);
-				// 	tree.castShadow = true;
-				// 	tree.receiveShadow = true;
-				// 	tree.scale.set(1, 12, 1);
-				// 	tree.position.set(0, 10, 110);
-				// 	scene.add(tree);
-				// });
-				// var loader = new THREE.ObjectLoader();
-				// loader.load("objects/tree-toon.json", function (object) {
-				// 	var tree = new Physijs.BoxMesh(object.children[2].geometry, object.children[2].material, 0);
-				// 	tree.castShadow = true;
-				// 	tree.receiveShadow = true;
-				// 	tree.scale.set(8, 8, 8);
-				// 	tree.position.set(0, 18, 110);
-				// 	tree.rotation.x = Math.PI;
-				// 	scene.add(tree);
-				// });
-				// var loader = new THREE.ObjectLoader();
-				// loader.load("objects/tree-toon.json", function (object) {
-				// 	var tree = new Physijs.BoxMesh(object.children[1].geometry, object.children[1].material, 0);
-				// 	tree.castShadow = true;
-				// 	tree.receiveShadow = true;
-				// 	tree.scale.set(6, 6, 6);
-				// 	tree.position.set(0, 25, 110);
-				// 	tree.rotation.x = Math.PI;
-				// 	scene.add(tree);
-				// });
-				// var loader = new THREE.ObjectLoader();
-				// loader.load("objects/tree-toon.json", function (object) {
-				// 	var tree = new Physijs.BoxMesh(object.children[0].geometry, object.children[0].material, 0);
-				// 	tree.castShadow = true;
-				// 	tree.receiveShadow = true;
-				// 	tree.scale.set(4, 4, 4);
-				// 	tree.position.set(0, 30, 110);
-				// 	tree.rotation.x = Math.PI;
-				// 	scene.add(tree);
-				// });
 			}
+
+
+			function addTree_1(x , z) {
+				// 	// trees
+				var loader = new THREE.ObjectLoader();
+				loader.load("objects/tree-toon.json", function (object) {
+					var tree = new Physijs.BoxMesh(object.children[3].geometry, object.children[3].material, 0);
+					tree.castShadow = true;
+					tree.receiveShadow = true;
+					tree.scale.set(1, 12, 1);
+					tree.position.set(x, 10, z);
+					scene.add(tree);
+				});
+				var loader = new THREE.ObjectLoader();
+				loader.load("objects/tree-toon.json", function (object) {
+					var tree = new Physijs.BoxMesh(object.children[2].geometry, object.children[2].material, 0);
+					tree.castShadow = true;
+					tree.receiveShadow = true;
+					tree.scale.set(8, 8, 8);
+					tree.position.set(x, 18, z);
+					tree.rotation.x = Math.PI;
+					scene.add(tree);
+				});
+				var loader = new THREE.ObjectLoader();
+				loader.load("objects/tree-toon.json", function (object) {
+					var tree = new Physijs.BoxMesh(object.children[1].geometry, object.children[1].material, 0);
+					tree.castShadow = true;
+					tree.receiveShadow = true;
+					tree.scale.set(6, 6, 6);
+					tree.position.set(x, 25, z);
+					tree.rotation.x = Math.PI;
+					scene.add(tree);
+				});
+				var loader = new THREE.ObjectLoader();
+				loader.load("objects/tree-toon.json", function (object) {
+					var tree = new Physijs.BoxMesh(object.children[0].geometry, object.children[0].material, 0);
+					tree.castShadow = true;
+					tree.receiveShadow = true;
+					tree.scale.set(4, 4, 4);
+					tree.position.set(x, 30, z);
+					tree.rotation.x = Math.PI;
+					scene.add(tree);
+				});
+			}
+			// var loader = new THREE.ObjectLoader();
+			// loader.load("objects/tree-toon.json", function (object) {
+			// 	var tree = new Physijs.BoxMesh(object.children[3].geometry, object.children[3].material, 0);
+			// 	tree.castShadow = true;
+			// 	tree.receiveShadow = true;
+			// 	tree.scale.set(1, 12, 1);
+			// 	tree.position.set(0, 10, 110);
+			// 	scene.add(tree);
+			// });
+			// var loader = new THREE.ObjectLoader();
+			// loader.load("objects/tree-toon.json", function (object) {
+			// 	var tree = new Physijs.BoxMesh(object.children[2].geometry, object.children[2].material, 0);
+			// 	tree.castShadow = true;
+			// 	tree.receiveShadow = true;
+			// 	tree.scale.set(8, 8, 8);
+			// 	tree.position.set(0, 18, 110);
+			// 	tree.rotation.x = Math.PI;
+			// 	scene.add(tree);
+			// });
+			// var loader = new THREE.ObjectLoader();
+			// loader.load("objects/tree-toon.json", function (object) {
+			// 	var tree = new Physijs.BoxMesh(object.children[1].geometry, object.children[1].material, 0);
+			// 	tree.castShadow = true;
+			// 	tree.receiveShadow = true;
+			// 	tree.scale.set(6, 6, 6);
+			// 	tree.position.set(0, 25, 110);
+			// 	tree.rotation.x = Math.PI;
+			// 	scene.add(tree);
+			// });
+			// var loader = new THREE.ObjectLoader();
+			// loader.load("objects/tree-toon.json", function (object) {
+			// 	var tree = new Physijs.BoxMesh(object.children[0].geometry, object.children[0].material, 0);
+			// 	tree.castShadow = true;
+			// 	tree.receiveShadow = true;
+			// 	tree.scale.set(4, 4, 4);
+			// 	tree.position.set(0, 30, 110);
+			// 	tree.rotation.x = Math.PI;
+			// 	scene.add(tree);
+			// });
 
 
 			// --------------------------------------- ball ---------------------------------------
@@ -656,7 +639,23 @@
 			}
 
 			addBall();
-			addObject();
+			addClouds();
+			addTree_1(230, 230);
+			addTree_1(240, 200);
+			addTree_1(180, 240);
+			addTree_1(100, 230);
+			addTree_1(30, 30);
+			addTree_1(30, 130);
+			addTree_1(-230, 130);
+			addTree_1(-130, 130);
+			addTree_1(-130, -130);
+			addTree_1(130, -130);
+			addTree_1(240, 20);
+			addTree_1(30, 240);
+			addTree_1(-230, -230);
+			addTree_1(-150, 0);
+			addTree_1(170, -50);
+			addTree_1(-50, 20);
 			addCar();
 			addGround();
 			requestAnimationFrame(render);
@@ -666,7 +665,7 @@
 
 		function camera_update() {
 			//var relativeCameraOffset = new THREE.Vector3(100 ,100 ,0);
-			var relativeCameraOffset = new THREE.Vector3(0, 50, -100);
+			var relativeCameraOffset = new THREE.Vector3(0, 30, -100);
 			var cameraOffset = relativeCameraOffset.applyMatrix4(car.mesh.matrixWorld);
 			camera.position.x = cameraOffset.x;
 			camera.position.y = cameraOffset.y;
