@@ -28,6 +28,8 @@
 
 		var input;
 		var cloud;
+		var timer;
+		var seconds = 0;
 
 		// ------------------------- ball var ----------------------------------
 		var score, degree, ball_color;
@@ -468,7 +470,7 @@
 				}
 			}
 
-			function addFlag(){
+			function addFlag() {
 				var x = 0;
 				var z = -240;
 				var loader = new THREE.ObjectLoader();
@@ -632,6 +634,8 @@
 			function onCollision2(other_object, linear_velocity, angular_velocity) {
 				if (other_object.name === "car") {
 					document.getElementById("score").innerHTML = "Nice play!!!!!!(*^_^*)" + "Your Score is " + score.toString();
+					document.getElementById("time").innerHTML = "Your final time is " + seconds + "s";
+					clearInterval(timer);
 				}
 			}
 			function ExplodeAnimation(x, y, z) {
@@ -683,8 +687,8 @@
 
 
 			//------------------------------------------------functions----------------------------------------------------
-			var location_x = [220, 160, 80, 170, 30, -150, -170, 170, 240,  0]
-			var location_z = [240, 240, 230, 0, 110, 220,  20,  -130, -240, -130]
+			var location_x = [220, 160, 80, 170, 30, -150, -170, 170, 240, 0]
+			var location_z = [240, 240, 230, 0, 110, 220, 20, -130, -240, -130]
 			addBall(location_x.length, location_x, location_z);
 			addFlag();
 			addClouds();
@@ -768,6 +772,12 @@
 
 		window.onload = initScene;
 
+		function count() {
+			seconds++;
+			document.getElementById("time").innerHTML = "Your timing is " + seconds + "s";
+		}
+		timer = setInterval("count()", 1000);
+
 	</script>
 </head>
 
@@ -776,6 +786,7 @@
 		<!-- <h1>Constraints, Car - <a href="http://chandlerprall.github.com/Physijs/">Physijs</a></h1> -->
 		<p>Get all the coins and hit the flag.</p>
 		<h1 id='score'>You score is 0</h1>
+		<h1 id='time'>Your timing is 0 s</h1>
 	</div>
 	<div id="viewport"></div>
 </body>
