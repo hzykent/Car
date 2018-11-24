@@ -19,8 +19,8 @@
 		Physijs.scripts.worker = 'js/physijs_worker.js';
 		Physijs.scripts.ammo = 'ammo.js';
 		var initScene, render,
-			ground_material, car_material, wheel_material, wheel_geometry,
-			projector, renderer, render_stats, physics_stats, scene, ground_geometry, ground, light, camera,
+			car_material, wheel_material, wheel_geometry,
+			projector, renderer, render_stats, physics_stats, scene, ground, light, camera,
 			car = {};
 		var input;
 		var cloud;
@@ -44,6 +44,91 @@
 		///////////////////////////
 		// -------------------------- background var -----------------------------
 		var cameraCube, sceneCube, textureCube, cubeMesh;
+		//------------------------------- ground -------------------------------------------------------------------------------------
+		var map1 = [
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		]
+
+		var map2 = [
+			[0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+			[0, 1, 1, 0, 0, 1, 1, 0, 1, 1],
+			[0, 1, 1, 0, 0, 1, 1, 0, 1, 1],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+			[1, 1, 1, 0, 1, 1, 0, 0, 0, 0],
+			[0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+			[1, 1, 0, 0, 0, 0, 0, 0, 1, 1],
+			[1, 1, 0, 1, 1, 1, 1, 0, 1, 1],
+			[1, 1, 0, 1, 1, 1, 1, 0, 1, 1],
+		]
+
+		function createGround(map) {
+			var ground_material = Physijs.createMaterial(
+				new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture('images/cartoon1.png') }),
+				.8, // high friction
+				.4 // low restitution
+			);
+			ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
+			ground_material.map.repeat.set(12, 12);
+
+
+			var depth = 20;
+			var ground_geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
+			for (var i = 0; i < 10; i++) {
+				for (var j = 0; j < 10; j++) {
+					if (map[i][j] !== 0) {
+						var face_id = 500 * i + 10 * j;
+						for (var k = 0; k < 5; k++) {
+							pushFace(face_id + k * 100, depth);
+							pushFace(face_id + k * 100 + 1, depth);
+							pushFace(face_id + k * 100 + 2, depth);
+							pushFace(face_id + k * 100 + 3, depth);
+							pushFace(face_id + k * 100 + 4, depth);
+							pushFace(face_id + k * 100 + 5, depth);
+							pushFace(face_id + k * 100 + 6, depth);
+							pushFace(face_id + k * 100 + 7, depth);
+							pushFace(face_id + k * 100 + 8, depth);
+							pushFace(face_id + k * 100 + 9, depth);
+						}
+					}
+
+				}
+			}
+			function pushFace(face_id, depth) {
+				if (face_id >= 4999) return;
+				var face = ground_geometry.faces[face_id]
+				var vertexa = ground_geometry.vertices[face.a]
+				var vertexb = ground_geometry.vertices[face.b]
+				var vertexc = ground_geometry.vertices[face.c]
+				vertexa.z = -depth
+				vertexb.z = -depth
+				vertexc.z = -depth
+			}
+			ground_geometry.computeFaceNormals();
+			ground_geometry.computeVertexNormals();
+			var ground = new Physijs.HeightfieldMesh(
+				ground_geometry,
+				ground_material,
+				0, // mass
+				50,
+				50
+			);
+			ground.rotation.x = Math.PI / -2;
+			ground.rotation.z = Math.PI;
+			ground.receiveShadow = true;
+			return ground;
+		}
+
+
 		initScene = function () {
 			projector = new THREE.Projector;
 			renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -128,190 +213,7 @@
 			sceneCube.add(cubeMesh);
 			cubeMesh.material = cubeMaterial;
 			cubeMesh.visible = true;
-			//------------------------------- ground -------------------------------------------------------------------------------------
-			function addGround() {
-				ground_material = Physijs.createMaterial(
-					new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture('images/cartoon1.png') }),
-					.8, // high friction
-					.4 // low restitution
-				);
-				ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
-				ground_material.map.repeat.set(12, 12);
-				map = [
-					[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-					[1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-					[1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-					[0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-					[0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-				]
 
-
-				var depth = 50;
-				ground_geometry2 = new THREE.PlaneGeometry(500, 500, 50, 50);
-				for (var i = 0; i < 10; i++) {
-					for (var j = 0; j < 10; j++) {
-						if (map[i][j] !== 0) {
-							var face_id = 500 * i + 10 * j;
-							for (var k = 0; k < 5; k++) {
-								pushFace(face_id + k * 100, depth);
-								pushFace(face_id + k * 100 + 1, depth);
-								pushFace(face_id + k * 100 + 2, depth);
-								pushFace(face_id + k * 100 + 3, depth);
-								pushFace(face_id + k * 100 + 4, depth);
-								pushFace(face_id + k * 100 + 5, depth);
-								pushFace(face_id + k * 100 + 6, depth);
-								pushFace(face_id + k * 100 + 7, depth);
-								pushFace(face_id + k * 100 + 8, depth);
-								pushFace(face_id + k * 100 + 9, depth);
-							}
-						}
-
-					}
-				}
-				function pushFace(face_id, depth) {
-					if (face_id >= 4999) return;
-					var face = ground_geometry2.faces[face_id]
-					var vertexa = ground_geometry2.vertices[face.a]
-					var vertexb = ground_geometry2.vertices[face.b]
-					var vertexc = ground_geometry2.vertices[face.c]
-					vertexa.z = -depth
-					vertexb.z = -depth
-					vertexc.z = -depth
-				}
-				// for (var i = 0; i < 20; i++) {
-				// 	for (var j = 50 + i * 100; j < 70 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var i = 5; i < 20; i++) {
-				// 	for (var j = 10 + i * 100; j < 40 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var i = 5; i < 20; i++) {
-				// 	for (var j = 80 + i * 100; j < 90 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var i = 25; i < 35; i++) {
-				// 	for (var j = 0 + i * 100; j < 5 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var i = 25; i < 35; i++) {
-				// 	for (var j = 0 + i * 100; j < 10 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var i = 25; i < 35; i++) {
-				// 	for (var j = 20 + i * 100; j < 55 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var i = 25; i < 35; i++) {
-				// 	for (var j = 85 + i * 100; j < 100 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var i = 25; i < 35; i++) {
-				// 	for (var j = 65 + i * 100; j < 75 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var i = 40; i < 45; i++) {
-				// 	for (var j = 50 + i * 100; j < 90 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var i = 40; i < 45; i++) {
-				// 	for (var j = 10 + i * 100; j < 40 + i * 100; j++) {
-				// 		var face = ground_geometry.faces[j];
-				// 		var vertexa = ground_geometry.vertices[face.a];
-				// 		var vertexb = ground_geometry.vertices[face.b];
-				// 		var vertexc = ground_geometry.vertices[face.c];
-				// 		vertexa.z = -depth;
-				// 		vertexb.z = -depth;
-				// 		vertexc.z = -depth;
-				// 	}
-				// }
-				// for (var = 1400; i < 2601; i++) {
-				// 	var vertex = ground_geometry.vertices[i];
-				// 	//vertex.z = SimplexNoise.noise(vertex.x / 10, vertex.y / 10) * 5;
-				// 	vertex.z = -100;
-				// }
-				ground_geometry.computeFaceNormals();
-				ground_geometry.computeVertexNormals();
-				ground = new Physijs.HeightfieldMesh(
-					ground_geometry,
-					ground_material,
-					0, // mass
-					50,
-					50
-				);
-				ground.rotation.x = Math.PI / -2;
-				ground.rotation.z = Math.PI;
-				ground.receiveShadow = true;
-				scene.add(ground);
-			}
 			//----------------------------------------- Car ---------------------------------------------------------------------------------
 			function addCar() {
 				var loader = new THREE.JSONLoader();
@@ -652,7 +554,9 @@
 			addTree_1(170, -50);
 			addTree_1(-50, 20);
 			addCar();
-			addGround();
+			map = map1;
+			ground = createGround(map);
+			scene.add(ground);
 			requestAnimationFrame(render);
 			scene.simulate();
 		};
@@ -702,6 +606,21 @@
 			camera_update();
 		};
 		window.onload = initScene;
+		function changeScene() {
+			var level = document.getElementById("mySelect").value;
+			var newGround;
+			if (level == "Easy") {
+				map = map1;
+				newGround = createGround(map);
+			}
+			else {
+				map = map2;
+				newGround = createGround(map);
+			}
+			scene.add(newGround);
+			scene.remove(ground);
+			ground = newGround;
+		}
 		function count() {
 			seconds++;
 			document.getElementById("time").innerHTML = "Your timing is " + seconds + "s";
@@ -716,6 +635,11 @@
 		<p>Get all the coins and hit the flag.</p>
 		<h1 id='score'>You score is 0</h1>
 		<h1 id='time'>Your timing is 0 s</h1>
+
+		<select id="mySelect" onchange="changeScene()">
+			<option value="Easy">Easy
+			<option value="Hard">Hard
+		</select>
 	</div>
 	<div id="viewport"></div>
 </body>
