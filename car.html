@@ -27,7 +27,10 @@
 		var timer;
 		var seconds = 0;
 		var map;
+		var depth = 20;
 		// ------------------------- ball var ----------------------------------
+		var location_x = [220, 160, 80, 170, 30, -150, -170, 170, 240, 0]
+		var location_z = [240, 240, 230, 0, 110, 220, 20, -130, -240, -130]
 		var score, degree, ball_color;
 		var balls = []
 		var balls_display = []
@@ -41,6 +44,7 @@
 		var sizeRandomness = 4000;
 		var dirs = [];
 		var parts = [];
+		var tree_part = [];
 		///////////////////////////
 		// -------------------------- background var -----------------------------
 		var cameraCube, sceneCube, textureCube, cubeMesh;
@@ -127,8 +131,192 @@
 			ground.receiveShadow = true;
 			return ground;
 		}
+		///-------------------------------------tree---------------------------------
+		function addTree() {
+			addTree_1(230, 230);
+			addTree_1(240, 200);
+			addTree_1(180, 240);
+			addTree_1(100, 230);
+			addTree_1(30, 30);
+			addTree_1(30, 130);
+			addTree_1(-230, 130);
+			addTree_1(-130, 130);
+			addTree_1(-130, -130);
+			addTree_1(130, -130);
+			addTree_1(240, 20);
+			addTree_1(30, 240);
+			addTree_1(-230, -230);
+			addTree_1(-150, 0);
+			addTree_1(170, -50);
+			addTree_1(-50, 20);
+		}
+		function removeTree() {
+			for (var i = 0; i < tree_part.length; i++) {
+				scene.remove(tree_part[i]);
+			}
+			tree_part = [];
+		}
 
+		function addTree_1(x, z) {
+			// 	// tree
+			var i = Math.floor((x + 250) / 50)
+			var j = Math.floor((z + 250) / 50)
+			if (map[9 - j][9 - i] !== 0) {
+				console.log("fall")
+				var y = -depth;
+			} else {
+				var y = 0;
+			}
+			
+			var loader = new THREE.ObjectLoader();
+			loader.load("objects/tree-toon.json", function (object) {
+				var tree = new Physijs.BoxMesh(object.children[3].geometry, object.children[3].material, 0);
+				tree.castShadow = true;
+				tree.receiveShadow = true;
+				tree.scale.set(1, 12, 1);
+				tree.position.set(x, 10 + y, z);
+				scene.add(tree);
+				tree_part.push(tree);
+			});
+			var loader = new THREE.ObjectLoader();
+			loader.load("objects/tree-toon.json", function (object) {
+				var tree = new Physijs.BoxMesh(object.children[2].geometry, object.children[2].material, 0);
+				tree.castShadow = true;
+				tree.receiveShadow = true;
+				tree.scale.set(8, 8, 8);
+				tree.position.set(x, 18 + y, z);
+				tree.rotation.x = Math.PI;
+				scene.add(tree);
+				tree_part.push(tree);
+			});
+			var loader = new THREE.ObjectLoader();
+			loader.load("objects/tree-toon.json", function (object) {
+				var tree = new Physijs.BoxMesh(object.children[1].geometry, object.children[1].material, 0);
+				tree.castShadow = true;
+				tree.receiveShadow = true;
+				tree.scale.set(6, 6, 6);
+				tree.position.set(x, 25 + y, z);
+				tree.rotation.x = Math.PI;
+				scene.add(tree);
+				tree_part.push(tree);
+			});
+			var loader = new THREE.ObjectLoader();
+			loader.load("objects/tree-toon.json", function (object) {
+				var tree = new Physijs.BoxMesh(object.children[0].geometry, object.children[0].material, 0);
+				tree.castShadow = true;
+				tree.receiveShadow = true;
+				tree.scale.set(4, 4, 4);
+				tree.position.set(x, 30 + y, z);
+				tree.rotation.x = Math.PI;
+				scene.add(tree);
+				tree_part.push(tree);
+			});
+			return tree_part;
+		}
 
+		// --------------------------------------- ball ---------------------------------------
+		function addBall(nums, location_x, location_z) {
+			// ball_color = colors[Math.round(Math.random() * colors.length)];
+			ball_color = 0xF9A602;
+			var ball_material = Physijs.createMaterial(
+				new THREE.MeshStandardMaterial({ color: ball_color, shading: THREE.FlatShading }),
+				.8,
+				.9);
+			var ball_geometry = new THREE.CylinderGeometry(3, 3, 1, 16, 1, false)
+			for (var i = 0; i < nums; i++) {
+				// ball_display = new THREE.Mesh(ball_geometry, ball_material, 10)
+				balls_display.push(new THREE.Mesh(ball_geometry, ball_material, 10));
+				balls_display[i].castShadow = true;
+				// ball = new Physijs.SphereMesh(ball_geometry, ball_material, 10);
+				balls.push(new Physijs.SphereMesh(ball_geometry, ball_material, 10));
+				balls[i].castShadow = true;
+				balls[i].visible = false;
+				balls[i].setDamping(0, 0.9);
+				balls[i].addEventListener('collision', onCollision);
+				releaseBall(location_x[i], location_z[i], balls[i], balls_display[i]);
+				scene.add(balls_display[i])
+				scene.add(balls[i]);
+			}
+		}
+		function releaseBall(x, z, ball, ball_display) {
+			ball.position.x = x;
+			ball.position.z = z;
+			ball_display.position.x = x;
+			ball_display.position.z = z;
+			var i = Math.floor((x + 250) / 50)
+			var j = Math.floor((z + 250) / 50)
+			if (map[9 - j][9 - i] !== 0) {
+				ball.position.y = -depth + 4;
+				ball_display.position.y = -depth + 4;
+			} else {
+				ball.position.y = 4;
+				ball_display.position.y = 4;
+			}
+			ball.__dirtyPosition = true;//force new position 
+			ball_display.__dirtyPosition = true;
+			// You also need to cancel the object's velocity 
+			ball.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+			ball.setAngularVelocity(new THREE.Vector3(0.1, 0, 0));
+		}
+		function removeBall(ball) {
+			parts.push(new ExplodeAnimation(ball.position.x, ball.position.y, ball.position.z));
+			scene.remove(ball);
+			scene.remove(balls_display[balls.indexOf(ball)])
+			// addBall();
+		}
+		function onCollision(other_object, linear_velocity, angular_velocity) {
+			if (other_object.name === "car") {
+				score++;
+				removeBall(this);
+				document.getElementById("score").innerHTML = "Your Score is " + score.toString();
+				// scene.remove(ground);
+				// addGround();
+			}
+		}
+		function onCollision2(other_object, linear_velocity, angular_velocity) {
+			if (other_object.name === "car") {
+				document.getElementById("score").innerHTML = "Nice play!!!!!!(*^_^*)" + "Your Score is " + score.toString();
+				document.getElementById("time").innerHTML = "Your final time is " + seconds + "s";
+				clearInterval(timer);
+			}
+		}
+		function ExplodeAnimation(x, y, z) {
+			var geometry = new THREE.Geometry();
+			for (var i = 0; i < totalObjects; i++) {
+				var vertex = new THREE.Vector3();
+				vertex.x = x;
+				vertex.y = y;
+				vertex.z = z;
+				geometry.vertices.push(vertex);
+				dirs.push({
+					x: (Math.random() * movementSpeed) - (movementSpeed / 2),
+					// y: (Math.random() * movementSpeed) - (movementSpeed / 2),
+					y: 0,
+					z: (Math.random() * movementSpeed) - (movementSpeed / 2)
+				});
+			}
+			var material = new THREE.PointsMaterial({ size: objectSize, color: ball_color });
+			var particles = new THREE.Points(geometry, material);
+			this.object = particles;
+			this.status = true;
+			this.xDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+			// this.yDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+			this.yDir = 0;
+			this.zDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+			scene.add(this.object);
+			this.update = function () {
+				if (this.status == true) {
+					var pCount = totalObjects;
+					while (pCount--) {
+						var particle = this.object.geometry.vertices[pCount]
+						particle.y += dirs[pCount].y;
+						particle.x += dirs[pCount].x;
+						particle.z += dirs[pCount].z;
+					}
+					this.object.geometry.verticesNeedUpdate = true;
+				}
+			}
+		}
 		initScene = function () {
 			projector = new THREE.Projector;
 			renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -163,7 +351,7 @@
 				1,
 				1000
 			);
-			camera.position.set(0, 200, 0);
+			camera.position.set(0, 700, 0);
 			camera.lookAt(scene.position);
 			scene.add(camera);
 			//------------------------------------------------------------- Light -------------------------------------------------------------------------
@@ -391,172 +579,18 @@
 					scene.add(cylinder);
 				});
 			}
-			function addTree_1(x, z) {
-				// 	// trees
-				var loader = new THREE.ObjectLoader();
-				loader.load("objects/tree-toon.json", function (object) {
-					var tree = new Physijs.BoxMesh(object.children[3].geometry, object.children[3].material, 0);
-					tree.castShadow = true;
-					tree.receiveShadow = true;
-					tree.scale.set(1, 12, 1);
-					tree.position.set(x, 10, z);
-					scene.add(tree);
-				});
-				var loader = new THREE.ObjectLoader();
-				loader.load("objects/tree-toon.json", function (object) {
-					var tree = new Physijs.BoxMesh(object.children[2].geometry, object.children[2].material, 0);
-					tree.castShadow = true;
-					tree.receiveShadow = true;
-					tree.scale.set(8, 8, 8);
-					tree.position.set(x, 18, z);
-					tree.rotation.x = Math.PI;
-					scene.add(tree);
-				});
-				var loader = new THREE.ObjectLoader();
-				loader.load("objects/tree-toon.json", function (object) {
-					var tree = new Physijs.BoxMesh(object.children[1].geometry, object.children[1].material, 0);
-					tree.castShadow = true;
-					tree.receiveShadow = true;
-					tree.scale.set(6, 6, 6);
-					tree.position.set(x, 25, z);
-					tree.rotation.x = Math.PI;
-					scene.add(tree);
-				});
-				var loader = new THREE.ObjectLoader();
-				loader.load("objects/tree-toon.json", function (object) {
-					var tree = new Physijs.BoxMesh(object.children[0].geometry, object.children[0].material, 0);
-					tree.castShadow = true;
-					tree.receiveShadow = true;
-					tree.scale.set(4, 4, 4);
-					tree.position.set(x, 30, z);
-					tree.rotation.x = Math.PI;
-					scene.add(tree);
-				});
-			}
-			// --------------------------------------- ball ---------------------------------------
-			function addBall(nums, location_x, location_z) {
-				// ball_color = colors[Math.round(Math.random() * colors.length)];
-				ball_color = 0xF9A602;
-				var ball_material = Physijs.createMaterial(
-					new THREE.MeshStandardMaterial({ color: ball_color, shading: THREE.FlatShading }),
-					.8,
-					.9);
-				var ball_geometry = new THREE.CylinderGeometry(3, 3, 1, 16, 1, false)
-				for (var i = 0; i < nums; i++) {
-					// ball_display = new THREE.Mesh(ball_geometry, ball_material, 10)
-					balls_display.push(new THREE.Mesh(ball_geometry, ball_material, 10));
-					balls_display[i].castShadow = true;
-					// ball = new Physijs.SphereMesh(ball_geometry, ball_material, 10);
-					balls.push(new Physijs.SphereMesh(ball_geometry, ball_material, 10));
-					balls[i].castShadow = true;
-					balls[i].visible = false;
-					balls[i].setDamping(0, 0.9);
-					balls[i].addEventListener('collision', onCollision);
-					releaseBall(location_x[i], location_z[i], balls[i], balls_display[i]);
-					scene.add(balls_display[i])
-					scene.add(balls[i]);
-				}
-			}
-			function releaseBall(x, z, ball, ball_display) {
-				ball.position.y = 4;
-				ball.position.x = x;
-				ball.position.z = z;
-				ball_display.position.x = x;
-				ball_display.position.y = 4;
-				ball_display.position.z = z;
-				ball.__dirtyPosition = true;//force new position 
-				ball_display.__dirtyPosition = true;
-				// You also need to cancel the object's velocity 
-				ball.setLinearVelocity(new THREE.Vector3(0, 0, 0));
-				ball.setAngularVelocity(new THREE.Vector3(0.1, 0, 0));
-			}
-			function removeBall(ball) {
-				parts.push(new ExplodeAnimation(ball.position.x, ball.position.y, ball.position.z));
-				scene.remove(ball);
-				scene.remove(balls_display[balls.indexOf(ball)])
-				// addBall();
-			}
-			function onCollision(other_object, linear_velocity, angular_velocity) {
-				if (other_object.name === "car") {
-					score++;
-					removeBall(this);
-					document.getElementById("score").innerHTML = "Your Score is " + score.toString();
-					// scene.remove(ground);
-					// addGround();
-				}
-			}
-			function onCollision2(other_object, linear_velocity, angular_velocity) {
-				if (other_object.name === "car") {
-					document.getElementById("score").innerHTML = "Nice play!!!!!!(*^_^*)" + "Your Score is " + score.toString();
-					document.getElementById("time").innerHTML = "Your final time is " + seconds + "s";
-					clearInterval(timer);
-				}
-			}
-			function ExplodeAnimation(x, y, z) {
-				var geometry = new THREE.Geometry();
-				for (var i = 0; i < totalObjects; i++) {
-					var vertex = new THREE.Vector3();
-					vertex.x = x;
-					vertex.y = y;
-					vertex.z = z;
-					geometry.vertices.push(vertex);
-					dirs.push({
-						x: (Math.random() * movementSpeed) - (movementSpeed / 2),
-						// y: (Math.random() * movementSpeed) - (movementSpeed / 2),
-						y: 0,
-						z: (Math.random() * movementSpeed) - (movementSpeed / 2)
-					});
-				}
-				var material = new THREE.PointsMaterial({ size: objectSize, color: ball_color });
-				var particles = new THREE.Points(geometry, material);
-				this.object = particles;
-				this.status = true;
-				this.xDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
-				// this.yDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
-				this.yDir = 0;
-				this.zDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
-				scene.add(this.object);
-				this.update = function () {
-					if (this.status == true) {
-						var pCount = totalObjects;
-						while (pCount--) {
-							var particle = this.object.geometry.vertices[pCount]
-							particle.y += dirs[pCount].y;
-							particle.x += dirs[pCount].x;
-							particle.z += dirs[pCount].z;
-						}
-						this.object.geometry.verticesNeedUpdate = true;
-					}
-				}
-			}
 			//------------------------------------------------ view angle swich --------------------------------------------------
 			window.addEventListener('wheel', onMouseWheel, false);
 			//------------------------------------------------functions----------------------------------------------------
-			var location_x = [220, 160, 80, 170, 30, -150, -170, 170, 240, 0]
-			var location_z = [240, 240, 230, 0, 110, 220, 20, -130, -240, -130]
-			addBall(location_x.length, location_x, location_z);
-			addFlag();
-			addClouds();
-			addTree_1(230, 230);
-			addTree_1(240, 200);
-			addTree_1(180, 240);
-			addTree_1(100, 230);
-			addTree_1(30, 30);
-			addTree_1(30, 130);
-			addTree_1(-230, 130);
-			addTree_1(-130, 130);
-			addTree_1(-130, -130);
-			addTree_1(130, -130);
-			addTree_1(240, 20);
-			addTree_1(30, 240);
-			addTree_1(-230, -230);
-			addTree_1(-150, 0);
-			addTree_1(170, -50);
-			addTree_1(-50, 20);
-			addCar();
+
 			map = map1;
 			ground = createGround(map);
 			scene.add(ground);
+			addBall(location_x.length, location_x, location_z);
+			addFlag();
+			addClouds();
+			addTree();
+			addCar();
 			requestAnimationFrame(render);
 			scene.simulate();
 		};
@@ -612,10 +646,26 @@
 			if (level == "Easy") {
 				map = map1;
 				newGround = createGround(map);
+				for (var i = 0; i < balls.length; i++) {
+					scene.remove(balls[i]);
+					scene.remove(balls_display[i]);
+				}
+				
+				addBall(location_x.length, location_x, location_z);
+				addTree();
+				removeTree();
 			}
 			else {
 				map = map2;
 				newGround = createGround(map);
+				for (var i = 0; i < balls.length; i++) {
+					scene.remove(balls[i]);
+					scene.remove(balls_display[i]);
+				}
+				
+				addTree();
+				addBall(location_x.length, location_x, location_z);
+				removeTree();
 			}
 			scene.add(newGround);
 			scene.remove(ground);
