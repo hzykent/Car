@@ -15,23 +15,18 @@
 	<script type='text/javascript' src="js/Projector.js"></script>
 
 	<script type="text/javascript">
-
 		'use strict';
-
 		Physijs.scripts.worker = 'js/physijs_worker.js';
 		Physijs.scripts.ammo = 'ammo.js';
-
 		var initScene, render,
 			ground_material, car_material, wheel_material, wheel_geometry,
 			projector, renderer, render_stats, physics_stats, scene, ground_geometry, ground, light, camera,
 			car = {};
-
 		var input;
 		var cloud;
 		var timer;
 		var seconds = 0;
 		var map;
-
 		// ------------------------- ball var ----------------------------------
 		var score, degree, ball_color;
 		var balls = []
@@ -39,7 +34,6 @@
 		score = 0;
 		degree = 0;
 		var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
-
 		////////////// var for explode/////////
 		var movementSpeed = 80;
 		var totalObjects = 1000;
@@ -48,32 +42,26 @@
 		var dirs = [];
 		var parts = [];
 		///////////////////////////
-
 		// -------------------------- background var -----------------------------
 		var cameraCube, sceneCube, textureCube, cubeMesh;
-
 		initScene = function () {
 			projector = new THREE.Projector;
-
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			renderer.shadowMapEnabled = true;
 			renderer.shadowMapSoft = true;
 			document.getElementById('viewport').appendChild(renderer.domElement);
 			renderer.autoClear = false;
-
 			render_stats = new Stats();
 			render_stats.domElement.style.position = 'absolute';
 			render_stats.domElement.style.top = '0px';
 			render_stats.domElement.style.zIndex = 100;
 			document.getElementById('viewport').appendChild(render_stats.domElement);
-
 			physics_stats = new Stats();
 			physics_stats.domElement.style.position = 'absolute';
 			physics_stats.domElement.style.top = '50px';
 			physics_stats.domElement.style.zIndex = 100;
 			document.getElementById('viewport').appendChild(physics_stats.domElement);
-
 			// ---------------------------- Physijs Scene and camera ---------------------------------------------------------------------------
 			scene = new Physijs.Scene;
 			scene.setGravity(new THREE.Vector3(0, -30, 0));
@@ -84,7 +72,6 @@
 					physics_stats.update();
 				}
 			);
-
 			camera = new THREE.PerspectiveCamera(
 				35,
 				window.innerWidth / window.innerHeight,
@@ -94,8 +81,6 @@
 			camera.position.set(0, 200, 0);
 			camera.lookAt(scene.position);
 			scene.add(camera);
-
-
 			//------------------------------------------------------------- Light -------------------------------------------------------------------------
 			light = new THREE.DirectionalLight(0xFFFFFF);
 			light.position.set(300, 600, 300);
@@ -113,12 +98,8 @@
 			scene.add(light);
 			var ambient = new THREE.AmbientLight(0x101010); // soft white light
 			scene.add(ambient);
-
-
-
 			//------------------------------------ background cube ---------------------------------------------------------------------------
 			sceneCube = new THREE.Scene;
-
 			cameraCube = new THREE.PerspectiveCamera(
 				35,
 				window.innerWidth / window.innerHeight,
@@ -147,11 +128,7 @@
 			sceneCube.add(cubeMesh);
 			cubeMesh.material = cubeMaterial;
 			cubeMesh.visible = true;
-
-
-
 			//------------------------------- ground -------------------------------------------------------------------------------------
-
 			function addGround() {
 				ground_material = Physijs.createMaterial(
 					new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture('images/cartoon1.png') }),
@@ -160,85 +137,52 @@
 				);
 				ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
 				ground_material.map.repeat.set(12, 12);
-
-
 				map = [
-					[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-					[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+					[1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+					[1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+					[0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+					[0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				]
-				// map = [
-				// 	[1,1,1,1,1,1,1,1,1,1],
-				// 	[1,1,1,1,1,1,1,1,1,1],
-				// 	[1,1,1,1,1,1,1,1,1,1],
-				// 	[1,1,1,1,1,1,1,1,1,1],
-				// 	[1,1,1,1,1,1,1,1,1,1],
-				// 	[1,1,1,1,1,1,1,1,1,1],
-				// 	[1,1,1,1,1,1,1,1,1,1],
-				// 	[1,1,1,1,1,1,1,1,1,1],
-				// 	[1,1,1,1,1,1,1,1,1,1],
-				// 	[1,1,1,1,1,1,1,1,1,0],
-				// ]
 
 
-				var depth = 20;
-				ground_geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
-				for (var i = 0; i < 25; i++) {
-					for (var j = 0; j < 25; j++) {
+				var depth = 50;
+				ground_geometry2 = new THREE.PlaneGeometry(500, 500, 50, 50);
+				for (var i = 0; i < 10; i++) {
+					for (var j = 0; j < 10; j++) {
 						if (map[i][j] !== 0) {
-							// for(var ii = 0; ii < 10; ii++){
-							// 	for(var jj = 0; jj < 5; jj++){
-							// 		var face_id = 500 * i + 50 * j + ii + 100 * jj;
-							// 		pushFace(face_id, depth);
-							// 		console.log('push', face_id);
-							// 	}
-							// }
-							var face_id = 200 * i + 4 * j;
-							pushFace(face_id, depth);
-							pushFace(face_id + 1, depth);
-							pushFace(face_id + 2, depth);
-							pushFace(face_id + 3, depth);
-							pushFace(face_id + 101, depth);
-							pushFace(face_id + 102, depth);
-							pushFace(face_id + 103, depth);
-							pushFace(face_id + 104, depth);
+							var face_id = 500 * i + 10 * j;
+							for (var k = 0; k < 5; k++) {
+								pushFace(face_id + k * 100, depth);
+								pushFace(face_id + k * 100 + 1, depth);
+								pushFace(face_id + k * 100 + 2, depth);
+								pushFace(face_id + k * 100 + 3, depth);
+								pushFace(face_id + k * 100 + 4, depth);
+								pushFace(face_id + k * 100 + 5, depth);
+								pushFace(face_id + k * 100 + 6, depth);
+								pushFace(face_id + k * 100 + 7, depth);
+								pushFace(face_id + k * 100 + 8, depth);
+								pushFace(face_id + k * 100 + 9, depth);
+							}
 						}
 
 					}
 				}
 				function pushFace(face_id, depth) {
-					if(face_id >= 4999) return;
-					var face = ground_geometry.faces[face_id]
-					var vertexa = ground_geometry.vertices[face.a]
-					var vertexb = ground_geometry.vertices[face.b]
-					var vertexc = ground_geometry.vertices[face.c]
+					if (face_id >= 4999) return;
+					var face = ground_geometry2.faces[face_id]
+					var vertexa = ground_geometry2.vertices[face.a]
+					var vertexb = ground_geometry2.vertices[face.b]
+					var vertexc = ground_geometry2.vertices[face.c]
 					vertexa.z = -depth
 					vertexb.z = -depth
 					vertexc.z = -depth
 				}
-
 				// for (var i = 0; i < 20; i++) {
 				// 	for (var j = 50 + i * 100; j < 70 + i * 100; j++) {
 				// 		var face = ground_geometry.faces[j];
@@ -356,7 +300,6 @@
 				// }
 				ground_geometry.computeFaceNormals();
 				ground_geometry.computeVertexNormals();
-
 				ground = new Physijs.HeightfieldMesh(
 					ground_geometry,
 					ground_material,
@@ -369,13 +312,9 @@
 				ground.receiveShadow = true;
 				scene.add(ground);
 			}
-
-
 			//----------------------------------------- Car ---------------------------------------------------------------------------------
-
 			function addCar() {
 				var loader = new THREE.JSONLoader();
-
 				loader.load("models/mustang.js", function (c, c_materials) {
 					loader.load("models/mustang_wheel.js", function (wheel, wheel_materials) {
 						var mesh = new Physijs.BoxMesh(
@@ -384,7 +323,6 @@
 						);
 						mesh.position.y = 2;
 						mesh.castShadow = mesh.receiveShadow = true;
-
 						car = new Physijs.Vehicle(mesh, new Physijs.VehicleTuning(
 							10.88,
 							1.83,
@@ -397,9 +335,7 @@
 						car.mesh.position.set(240, 10, 240);
 						car.mesh.rotation.y = Math.PI * 3 / 2;
 						scene.add(car);
-
 						var wheel_material = new THREE.MeshFaceMaterial(wheel_materials);
-
 						for (var i = 0; i < 4; i++) {
 							car.addWheel(
 								wheel,
@@ -416,7 +352,6 @@
 								i < 2 ? false : true
 							);
 						}
-
 						input = {
 							// 1 is forward, 0 is brake, -1 is backward, 'nopower' is default
 							power: 'nopower',
@@ -428,19 +363,15 @@
 								case 32: // Space
 									input.power = 0;
 									break;
-
 								case 37: // left
 									input.direction = 1;
 									break;
-
 								case 38: // forward
 									input.power = 1;
 									break;
-
 								case 39: // right
 									input.direction = -1;
 									break;
-
 								case 40: // back
 									input.power = -1;
 									break;
@@ -460,19 +391,15 @@
 								case 32:
 									input.power = 'nopower';
 									break;
-
 								case 37: // left
 									input.direction = null;
 									break;
-
 								case 38: // forward
 									input.power = 'nopower';
 									break;
-
 								case 39: // right
 									input.direction = null;
 									break;
-
 								case 40: // back
 									input.power = 'nopower';
 									break;
@@ -497,7 +424,6 @@
 							}
 							car.setSteering(input.steering, 0);
 							car.setSteering(input.steering, 1);
-
 							car.setBrake(0, 0);
 							car.setBrake(0, 1);
 							car.setBrake(0, 2);
@@ -516,19 +442,15 @@
 								car.applyEngineForce(0);
 							}
 						}
-
 						scene.simulate(undefined, 2);
 						physics_stats.update();
 					}
 				);
 			}
-
-
 			// ---------------------------------------------- JSON object Loading-------------------------------------------------------------
 			function getRandomInt(max) {
 				return Math.floor(Math.random() * Math.floor(max));
 			}
-
 			function addClouds() {
 				// clouds
 				for (var i = 0; i < 15; i++) {
@@ -545,7 +467,6 @@
 					});
 				}
 			}
-
 			function addFlag() {
 				var x = 0;
 				var z = -240;
@@ -568,8 +489,6 @@
 					scene.add(cylinder);
 				});
 			}
-
-
 			function addTree_1(x, z) {
 				// 	// trees
 				var loader = new THREE.ObjectLoader();
@@ -612,11 +531,7 @@
 					scene.add(tree);
 				});
 			}
-
-
-
 			// --------------------------------------- ball ---------------------------------------
-
 			function addBall(nums, location_x, location_z) {
 				// ball_color = colors[Math.round(Math.random() * colors.length)];
 				ball_color = 0xF9A602;
@@ -638,7 +553,6 @@
 					releaseBall(location_x[i], location_z[i], balls[i], balls_display[i]);
 					scene.add(balls_display[i])
 					scene.add(balls[i]);
-
 				}
 			}
 			function releaseBall(x, z, ball, ball_display) {
@@ -683,7 +597,6 @@
 					vertex.x = x;
 					vertex.y = y;
 					vertex.z = z;
-
 					geometry.vertices.push(vertex);
 					dirs.push({
 						x: (Math.random() * movementSpeed) - (movementSpeed / 2),
@@ -694,17 +607,13 @@
 				}
 				var material = new THREE.PointsMaterial({ size: objectSize, color: ball_color });
 				var particles = new THREE.Points(geometry, material);
-
 				this.object = particles;
 				this.status = true;
-
 				this.xDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
 				// this.yDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
 				this.yDir = 0;
 				this.zDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
-
 				scene.add(this.object);
-
 				this.update = function () {
 					if (this.status == true) {
 						var pCount = totalObjects;
@@ -718,12 +627,8 @@
 					}
 				}
 			}
-
 			//------------------------------------------------ view angle swich --------------------------------------------------
 			window.addEventListener('wheel', onMouseWheel, false);
-
-
-
 			//------------------------------------------------functions----------------------------------------------------
 			var location_x = [220, 160, 80, 170, 30, -150, -170, 170, 240, 0]
 			var location_z = [240, 240, 230, 0, 110, 220, 20, -130, -240, -130]
@@ -751,22 +656,14 @@
 			requestAnimationFrame(render);
 			scene.simulate();
 		};
-
 		function onMouseWheel(event) {
-
 			event.preventDefault();
-
 			camera.position.y -= event.deltaY * 0.05;
 			cameraCube.position.y -= event.deltaY * 0.05;
-
 			// prevent scrolling beyond a min/max value
-
 			camera.position.clampScalar(0, 300);
 			cameraCube.position.clampScalar(0, 300);
-
 		}
-
-
 		function camera_update() {
 			if (car.mesh) {
 				//var relativeCameraOffset = new THREE.Vector3(100 ,100 ,0);
@@ -785,13 +682,11 @@
 				cameraCube.lookAt(car.mesh.position);
 			}
 		}
-
 		render = function () {
 			requestAnimationFrame(render);
 			renderer.clear();
 			renderer.render(sceneCube, cameraCube);
 			renderer.render(scene, camera);
-
 			// make the ball rotation
 			for (var i = 0; i < balls.length; i++) {
 				balls[i].rotation.z = 0.5 * Math.PI;
@@ -803,19 +698,15 @@
 			while (pCount--) {
 				parts[pCount].update();
 			}
-
 			render_stats.update();
 			camera_update();
 		};
-
 		window.onload = initScene;
-
 		function count() {
 			seconds++;
 			document.getElementById("time").innerHTML = "Your timing is " + seconds + "s";
 		}
 		timer = setInterval("count()", 1000);
-
 	</script>
 </head>
 
