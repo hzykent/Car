@@ -30,6 +30,7 @@
 		var cloud;
 		var timer;
 		var seconds = 0;
+		var map;
 
 		// ------------------------- ball var ----------------------------------
 		var score, degree, ball_color;
@@ -159,120 +160,195 @@
 				);
 				ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
 				ground_material.map.repeat.set(12, 12);
+
+
+				map = [
+					[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+				]
+				// map = [
+				// 	[1,1,1,1,1,1,1,1,1,1],
+				// 	[1,1,1,1,1,1,1,1,1,1],
+				// 	[1,1,1,1,1,1,1,1,1,1],
+				// 	[1,1,1,1,1,1,1,1,1,1],
+				// 	[1,1,1,1,1,1,1,1,1,1],
+				// 	[1,1,1,1,1,1,1,1,1,1],
+				// 	[1,1,1,1,1,1,1,1,1,1],
+				// 	[1,1,1,1,1,1,1,1,1,1],
+				// 	[1,1,1,1,1,1,1,1,1,1],
+				// 	[1,1,1,1,1,1,1,1,1,0],
+				// ]
+
+
 				var depth = 20;
-
-
 				ground_geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
-				for (var i = 0; i < 20; i++) {
-					for (var j = 50 + i * 100; j < 70 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
+				for (var i = 0; i < 25; i++) {
+					for (var j = 0; j < 25; j++) {
+						if (map[i][j] !== 0) {
+							// for(var ii = 0; ii < 10; ii++){
+							// 	for(var jj = 0; jj < 5; jj++){
+							// 		var face_id = 500 * i + 50 * j + ii + 100 * jj;
+							// 		pushFace(face_id, depth);
+							// 		console.log('push', face_id);
+							// 	}
+							// }
+							var face_id = 200 * i + 4 * j;
+							pushFace(face_id, depth);
+							pushFace(face_id + 1, depth);
+							pushFace(face_id + 2, depth);
+							pushFace(face_id + 3, depth);
+							pushFace(face_id + 101, depth);
+							pushFace(face_id + 102, depth);
+							pushFace(face_id + 103, depth);
+							pushFace(face_id + 104, depth);
+						}
+
 					}
 				}
-				for (var i = 5; i < 20; i++) {
-					for (var j = 10 + i * 100; j < 40 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
-					}
+				function pushFace(face_id, depth) {
+					if(face_id >= 4999) return;
+					var face = ground_geometry.faces[face_id]
+					var vertexa = ground_geometry.vertices[face.a]
+					var vertexb = ground_geometry.vertices[face.b]
+					var vertexc = ground_geometry.vertices[face.c]
+					vertexa.z = -depth
+					vertexb.z = -depth
+					vertexc.z = -depth
 				}
-				for (var i = 5; i < 20; i++) {
-					for (var j = 80 + i * 100; j < 90 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
-					}
-				}
-				for (var i = 25; i < 35; i++) {
-					for (var j = 0 + i * 100; j < 5 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
-					}
-				}
-				for (var i = 25; i < 35; i++) {
-					for (var j = 0 + i * 100; j < 10 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
-					}
-				}
-				for (var i = 25; i < 35; i++) {
-					for (var j = 20 + i * 100; j < 55 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
-					}
-				}
-				for (var i = 25; i < 35; i++) {
-					for (var j = 85 + i * 100; j < 100 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
-					}
-				}
-				for (var i = 25; i < 35; i++) {
-					for (var j = 65 + i * 100; j < 75 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
-					}
-				}
-				for (var i = 40; i < 45; i++) {
-					for (var j = 50 + i * 100; j < 90 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
-					}
-				}
-				for (var i = 40; i < 45; i++) {
-					for (var j = 10 + i * 100; j < 40 + i * 100; j++) {
-						var face = ground_geometry.faces[j];
-						var vertexa = ground_geometry.vertices[face.a];
-						var vertexb = ground_geometry.vertices[face.b];
-						var vertexc = ground_geometry.vertices[face.c];
-						vertexa.z = -depth;
-						vertexb.z = -depth;
-						vertexc.z = -depth;
-					}
-				}
+
+				// for (var i = 0; i < 20; i++) {
+				// 	for (var j = 50 + i * 100; j < 70 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
+				// for (var i = 5; i < 20; i++) {
+				// 	for (var j = 10 + i * 100; j < 40 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
+				// for (var i = 5; i < 20; i++) {
+				// 	for (var j = 80 + i * 100; j < 90 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
+				// for (var i = 25; i < 35; i++) {
+				// 	for (var j = 0 + i * 100; j < 5 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
+				// for (var i = 25; i < 35; i++) {
+				// 	for (var j = 0 + i * 100; j < 10 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
+				// for (var i = 25; i < 35; i++) {
+				// 	for (var j = 20 + i * 100; j < 55 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
+				// for (var i = 25; i < 35; i++) {
+				// 	for (var j = 85 + i * 100; j < 100 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
+				// for (var i = 25; i < 35; i++) {
+				// 	for (var j = 65 + i * 100; j < 75 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
+				// for (var i = 40; i < 45; i++) {
+				// 	for (var j = 50 + i * 100; j < 90 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
+				// for (var i = 40; i < 45; i++) {
+				// 	for (var j = 10 + i * 100; j < 40 + i * 100; j++) {
+				// 		var face = ground_geometry.faces[j];
+				// 		var vertexa = ground_geometry.vertices[face.a];
+				// 		var vertexb = ground_geometry.vertices[face.b];
+				// 		var vertexc = ground_geometry.vertices[face.c];
+				// 		vertexa.z = -depth;
+				// 		vertexb.z = -depth;
+				// 		vertexc.z = -depth;
+				// 	}
+				// }
 				// for (var = 1400; i < 2601; i++) {
 				// 	var vertex = ground_geometry.vertices[i];
 				// 	//vertex.z = SimplexNoise.noise(vertex.x / 10, vertex.y / 10) * 5;
@@ -536,45 +612,7 @@
 					scene.add(tree);
 				});
 			}
-			// var loader = new THREE.ObjectLoader();
-			// loader.load("objects/tree-toon.json", function (object) {
-			// 	var tree = new Physijs.BoxMesh(object.children[3].geometry, object.children[3].material, 0);
-			// 	tree.castShadow = true;
-			// 	tree.receiveShadow = true;
-			// 	tree.scale.set(1, 12, 1);
-			// 	tree.position.set(0, 10, 110);
-			// 	scene.add(tree);
-			// });
-			// var loader = new THREE.ObjectLoader();
-			// loader.load("objects/tree-toon.json", function (object) {
-			// 	var tree = new Physijs.BoxMesh(object.children[2].geometry, object.children[2].material, 0);
-			// 	tree.castShadow = true;
-			// 	tree.receiveShadow = true;
-			// 	tree.scale.set(8, 8, 8);
-			// 	tree.position.set(0, 18, 110);
-			// 	tree.rotation.x = Math.PI;
-			// 	scene.add(tree);
-			// });
-			// var loader = new THREE.ObjectLoader();
-			// loader.load("objects/tree-toon.json", function (object) {
-			// 	var tree = new Physijs.BoxMesh(object.children[1].geometry, object.children[1].material, 0);
-			// 	tree.castShadow = true;
-			// 	tree.receiveShadow = true;
-			// 	tree.scale.set(6, 6, 6);
-			// 	tree.position.set(0, 25, 110);
-			// 	tree.rotation.x = Math.PI;
-			// 	scene.add(tree);
-			// });
-			// var loader = new THREE.ObjectLoader();
-			// loader.load("objects/tree-toon.json", function (object) {
-			// 	var tree = new Physijs.BoxMesh(object.children[0].geometry, object.children[0].material, 0);
-			// 	tree.castShadow = true;
-			// 	tree.receiveShadow = true;
-			// 	tree.scale.set(4, 4, 4);
-			// 	tree.position.set(0, 30, 110);
-			// 	tree.rotation.x = Math.PI;
-			// 	scene.add(tree);
-			// });
+
 
 
 			// --------------------------------------- ball ---------------------------------------
