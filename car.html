@@ -61,19 +61,22 @@
 			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 		]
-
 		var map2 = [
-			[0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-			[0, 1, 1, 0, 0, 1, 1, 0, 1, 1],
-			[0, 1, 1, 0, 0, 1, 1, 0, 1, 1],
 			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-			[1, 1, 1, 0, 1, 1, 0, 1, 1, 0],
-			[1, 1, 1, 0, 1, 1, 0, 1, 1, 0],
-			[0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-			[1, 1, 0, 0, 0, 0, 0, 0, 1, 1],
-			[1, 1, 1, 1, 0, 0, 1, 0, 1, 1],
-			[1, 1, 1, 1, 0, 0, 1, 0, 1, 1],
+			[0, 1, 1, 0, 1, 1, 0, 1, 1, 0],
+			[0, 1, 1, 0, 1, 1, 0, 1, 1, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
+			[1, 0, 1, 1, 0, 1, 1, 0, 1, 1],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 1, 1, 1, 1, 0, 1, 1, 1, 0],
+			[0, 1, 1, 1, 1, 0, 1, 1, 1, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 		]
+
+		function getRandomInt(max) {
+			return Math.floor(Math.random() * Math.floor(max));
+		}
 
 		function createGround(map) {
 			var ground_material = Physijs.createMaterial(
@@ -83,8 +86,6 @@
 			);
 			ground_material.map.wrapS = ground_material.map.wrapT = THREE.RepeatWrapping;
 			ground_material.map.repeat.set(12, 12);
-
-
 			var depth = 20;
 			var ground_geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
 			for (var i = 0; i < 10; i++) {
@@ -104,7 +105,6 @@
 							pushFace(face_id + k * 100 + 9, depth);
 						}
 					}
-
 				}
 			}
 			function pushFace(face_id, depth) {
@@ -139,14 +139,14 @@
 			addTree_1(100, 230);
 			addTree_1(30, 30);
 			addTree_1(30, 130);
-			addTree_1(-230, 130);
+			addTree_1(-240, 130);
 			addTree_1(-130, 130);
 			addTree_1(-130, -130);
 			addTree_1(130, -130);
 			addTree_1(240, 20);
 			addTree_1(30, 240);
 			addTree_1(-230, -230);
-			addTree_1(-150, 0);
+			addTree_1(-170, 0);
 			addTree_1(170, -50);
 			addTree_1(-50, 20);
 		}
@@ -156,7 +156,6 @@
 			}
 			tree_part = [];
 		}
-
 		function addTree_1(x, z) {
 			// 	// tree
 			var i = Math.floor((x + 250) / 50)
@@ -167,7 +166,7 @@
 			} else {
 				var y = 0;
 			}
-			
+
 			var loader = new THREE.ObjectLoader();
 			loader.load("objects/tree-toon.json", function (object) {
 				var tree = new Physijs.BoxMesh(object.children[3].geometry, object.children[3].material, 0);
@@ -213,7 +212,6 @@
 			});
 			return tree_part;
 		}
-
 		// --------------------------------------- ball ---------------------------------------
 		function addBall(nums, location_x, location_z) {
 			// ball_color = colors[Math.round(Math.random() * colors.length)];
@@ -351,7 +349,7 @@
 				1,
 				1000
 			);
-			camera.position.set(0, 700, 0);
+			camera.position.set(0, 800, 0);
 			camera.lookAt(scene.position);
 			scene.add(camera);
 			//------------------------------------------------------------- Light -------------------------------------------------------------------------
@@ -401,7 +399,6 @@
 			sceneCube.add(cubeMesh);
 			cubeMesh.material = cubeMaterial;
 			cubeMesh.visible = true;
-
 			//----------------------------------------- Car ---------------------------------------------------------------------------------
 			function addCar() {
 				var loader = new THREE.JSONLoader();
@@ -538,9 +535,6 @@
 				);
 			}
 			// ---------------------------------------------- JSON object Loading-------------------------------------------------------------
-			function getRandomInt(max) {
-				return Math.floor(Math.random() * Math.floor(max));
-			}
 			function addClouds() {
 				// clouds
 				for (var i = 0; i < 15; i++) {
@@ -582,7 +576,6 @@
 			//------------------------------------------------ view angle swich --------------------------------------------------
 			window.addEventListener('wheel', onMouseWheel, false);
 			//------------------------------------------------functions----------------------------------------------------
-
 			map = map1;
 			ground = createGround(map);
 			scene.add(ground);
@@ -637,7 +630,7 @@
 				parts[pCount].update();
 			}
 			render_stats.update();
-			camera_update();
+			//camera_update();
 		};
 		window.onload = initScene;
 		function changeScene() {
@@ -650,7 +643,7 @@
 					scene.remove(balls[i]);
 					scene.remove(balls_display[i]);
 				}
-				
+
 				addBall(location_x.length, location_x, location_z);
 				addTree();
 				removeTree();
@@ -662,7 +655,7 @@
 					scene.remove(balls[i]);
 					scene.remove(balls_display[i]);
 				}
-				
+
 				addTree();
 				addBall(location_x.length, location_x, location_z);
 				removeTree();
