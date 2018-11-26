@@ -1,0 +1,25 @@
+canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	/* background-color: #111; */
+}
+
+ #showboard {
+    position: absolute;
+    left: 50px;
+    top: 50px;
+ }
+
+ #ending {
+    position: absolute;
+	top: 0;
+    left: 0;
+    bottom: 0%;
+    right: 0%;
+    text-align: center;
+    font-style: italic; 
+    color: red;
+    font-size: x-large;
+ }
+
