@@ -214,6 +214,7 @@
 			});
 			return tree_part;
 		}
+
 		// --------------------------------------- ball ---------------------------------------
 		function addBall(nums, location_x, location_z) {
 			// ball_color = colors[Math.round(Math.random() * colors.length)];
@@ -246,6 +247,7 @@
 			var i = Math.floor((x + 250) / 50)
 			var j = Math.floor((z + 250) / 50)
 			if (map[9 - j][9 - i] !== 0) {
+				ball_display.visible = false;
 				ball.position.y = -depth + 4;
 				ball_display.position.y = -depth + 4;
 			} else {
@@ -318,6 +320,7 @@
 				}
 			}
 		}
+		// ------------------------------- initial scene ------------------------------
 		initScene = function () {
 			projector = new THREE.Projector;
 			renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -674,6 +677,7 @@
 		timer = setInterval("count()", 1000);
 	</script>
 
+</head>
 
 <body>
 	<link rel="stylesheet" type="text/css" href="css/firework.css" />
